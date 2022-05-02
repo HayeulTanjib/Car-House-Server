@@ -62,7 +62,12 @@ const run = async () => {
             res.send(result)
         })
 
-     
+        //Post
+        app.post('/addinventory', async(req, res) => {
+            const addCar = req.body;
+            const result = await InventoryCollection.insertOne(addCar);
+            res.send({result: "success"})
+        })
        
     }
 
