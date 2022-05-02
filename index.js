@@ -39,6 +39,7 @@ const run = async () => {
             res.send(result);
         })
 
+        //Update 
         app.put('/inventory/:id', async(req, res) => {
             const id = req.params.id;
             const updateCar = req.body;
@@ -52,6 +53,16 @@ const run = async () => {
             const result = await InventoryCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
+
+        //Delete
+        app.delete('/inventory/:id', async(req, res) =>{
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await InventoryCollection.deleteOne(query)
+            res.send(result)
+        })
+
+     
        
     }
 
