@@ -62,11 +62,21 @@ const run = async () => {
             res.send(result)
         })
 
+
         //Post
-        app.post('/addinventory', async(req, res) => {
+        app.post('/addmycar', async(req, res) => {
             const addCar = req.body;
             const result = await InventoryCollection.insertOne(addCar);
-            res.send({result: "success"})
+            res.send(result);
+        })
+
+        //Get - My Car
+        app.get('/addmycar', async(req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = InventoryCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
         })
        
     }
