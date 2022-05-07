@@ -110,13 +110,12 @@ const run = async () => {
                 if(err){
                     return res.status(403).send({message: "Forbiden Access"})
                 }
-                console.log('decoded', decoded);
+               // console.log('decoded', decoded);
                 req.decoded = decoded;
             })
 
             console.log("Inside VJWT",authHeader);
             next();
-
         }
        
     }
