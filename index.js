@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 var cors = require('cors');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
 
 //middleware
@@ -71,25 +72,60 @@ const run = async () => {
         })
 
         //Get - My Car
-        app.get('/addmycar', async(req, res) => {
+        app.get('/addmycar', verifyJWT, async(req, res) => {
+            //const authHeader = req.headers.authorization;  //1st checking
+            //console.log(authHeader);
+
+            const decodedEmail = req.decoded.email;
             const email = req.query.email;
+            if(email == decodedEmail){
             const query = { email: email };
             const cursor = InventoryCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
+        }
+        else{
+            res.status(403).send({message: 'Forbidden access'})
+        }
         })
+
+        //JWT
+        app.post('/login', async(req, res) => {
+            const user = req.body;
+            console.log(user);
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1d'
+            });
+            res.send({accessToken});
+        })
+
+        function verifyJWT(req, res, next){
+            const authHeader = req.headers.authorization;
+            if(!authHeader){
+                return res.status(401).send({message: 'UnAuth Access'})
+            }
+            
+            const token = authHeader.split(' ')[1];
+            jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+                if(err){
+                    return res.status(403).send({message: "Forbiden Access"})
+                }
+                console.log('decoded', decoded);
+                req.decoded = decoded;
+            })
+
+            console.log("Inside VJWT",authHeader);
+            next();
+
+        }
        
     }
-
 
     finally{
         //await client.close(); or empty
     }
 }
 run().catch(console.dir)
-
-
-
 
 
 app.listen(port, () => {
